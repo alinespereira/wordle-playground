@@ -2,30 +2,29 @@ package com.wordle.game
 
 case class GameState(gameWord: GameWord,
                      totalTries: Int,
-                     currentTries: Int,
-                     guesses: List[GameWord.Guess],
+                     guesses: List[MatchPattern],
                      status: GameStatus) {
 
-  lazy val remainingTries: Int = totalTries - currentTries
+  private def performedTries: Int = guesses.length
+  private def remainingTries: Int = totalTries - performedTries
 
   def guess(word: String): GameState = {
-    val (guessResult, checkResult) = gameWord.guessAndCheck(word)
-    val currentStatus = if (remainingTries <= 1) GameOver
-    else if (checkResult) GameWon
-    else GameInProgress
-    val allGuesses = guessResult :: guesses
+    gameWord.validateWord(word) match {
+      case ValidWord =>
+        val (guessResult, checkResult) = gameWord.guessAndCheck(word)
+        val currentStatus =
+          if (performedTries >= totalTries - 1) GameOver
+          else if (checkResult) GameWon
+          else GameInProgress
+        val allGuesses = guessResult :: guesses
 
-    GameState(
-      gameWord,
-      totalTries,
-      currentTries + 1,
-      allGuesses,
-      currentStatus
-    )
+        copy(guesses = allGuesses, status = currentStatus)
+      case _ => this
+    }
   }
 
   override def toString: String = {
-    val guessesString = guesses.reverse.map(_.mkString(""))
+    val guessesString = guesses.reverse
       .zip(LazyList.from(1))
       .map { case (guess, idx) =>
         s"[$idx / $totalTries]: $guess"
@@ -35,6 +34,7 @@ case class GameState(gameWord: GameWord,
     s"""
        |Total tries: $totalTries
        |Remaining tries: $remainingTries
+       |Current tries: $performedTries
        |
        |$guessesString
        |""".stripMargin
