@@ -1,5 +1,7 @@
 package com.wordle.game
 
+import com.wordle.Utils
+
 import scala.util.Random
 
 case class GameWord(size: Int = 5) {

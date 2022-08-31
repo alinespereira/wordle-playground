@@ -13,20 +13,34 @@ object LetterGuessResult {
     Ordering.by(g => (g.letter, g.priority))
 }
 
+
+object LetterNotGuessed
+
 case class LetterNotGuessed(letter: Char) extends LetterGuessResult {
   override val color: String = Console.BLACK
   override val priority: Int = 40
 }
 
+
+object LetterNotFound
+
 case class LetterNotFound(letter: Char) extends LetterGuessResult {
   override val color: String = Console.RED
   override val priority: Int = 30
 }
+
+
+object LetterInWord
+
 case class LetterInWord(letter: Char) extends LetterGuessResult {
   override val color: String = Console.YELLOW
   override val priority: Int = 20
 }
-case class LetterInPosition(letter: Char, pos: Int) extends LetterGuessResult {
+
+
+object LetterInPosition
+
+case class LetterInPosition(letter: Char) extends LetterGuessResult {
   override val color: String = Console.GREEN
   override val priority: Int = 10
 }
